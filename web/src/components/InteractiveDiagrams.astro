@@ -43,9 +43,10 @@ import VimStateMachine from './VimStateMachine';
 
 interface Props {
   chapterNumber: number;
+  lang?: 'en' | 'zh';
 }
 
-const { chapterNumber } = Astro.props;
+const { chapterNumber, lang = 'en' } = Astro.props;
 
 interface DiagramEntry {
   title: string;
@@ -154,7 +155,7 @@ const bottomDiagrams = diagrams.filter(d => d.slotIndex < 0);
       <p class="text-sm text-[var(--color-muted)] mb-4">{diagram.description}</p>
 
       {diagram.component === 'AgentLoopSimulator' && <AgentLoopSimulator client:only="react" className="w-full" />}
-      {diagram.component === 'ArchitectureExplorer' && <ArchitectureExplorer client:only="react" className="w-full" />}
+      {diagram.component === 'ArchitectureExplorer' && <ArchitectureExplorer lang={lang} client:only="react" className="w-full" />}
       {diagram.component === 'APICallLifecycle' && <APICallLifecycle client:only="react" className="w-full" />}
       {diagram.component === 'APIRequestFlow' && <APIRequestFlow client:only="react" className="w-full" />}
       {diagram.component === 'BootstrapFlowchart' && <BootstrapFlowchart client:only="react" className="w-full" />}

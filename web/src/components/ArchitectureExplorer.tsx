@@ -100,13 +100,49 @@ const links: GraphLink[] = [
   },
 ];
 
+const zhNodeData: Record<string, { label: string; description: string }> = {
+  "query-loop": {
+    label: "查询循环 (Query Loop)",
+    description: "驱动整个系统的核心异步生成器。负责模型输出流处理、工具执行与上下文生命周期管理。",
+  },
+  "tool-system": {
+    label: "工具系统 (Tool System)",
+    description: "40+ 工具与 14 步严格防护流水线。内置权限决策系统与结果动态预算控制。",
+  },
+  tasks: {
+    label: "任务与子智能体 (Tasks)",
+    description: "子智能体 (Sub-agents) 与后台异步协作。状态机：pending、running、completed/failed。",
+  },
+  "state-layer": {
+    label: "状态层 (State Layer)",
+    description: "双层状态架构：Bootstrap STATE（可变单例）+ AppState（响应式响应树）。",
+  },
+  hooks: {
+    label: "钩子系统 (Hooks)",
+    description: "27 个核心生命周期事件。启动期冻结不可变快照，可拦截工具、修改调用结果并强行推进。",
+  },
+  memory: {
+    label: "记忆系统 (Memory)",
+    description: "基于纯文本 Markdown 配合 LLM 智能召回。4 类记忆模型：用户、反馈、项目、参考。",
+  },
+  user: {
+    label: "开发者 (User)",
+    description: "在终端通过命令行与智能体进行深度交互的开发者。",
+  },
+  repl: {
+    label: "REPL 终端",
+    description: "终端界面展示层。负责键盘协议解析、双缓冲帧调度、交互展示与权限弹窗。",
+  },
+};
+
 // --- Component ---
 
 interface Props {
   className?: string;
+  lang?: "en" | "zh";
 }
 
-export default function ArchitectureExplorer({ className }: Props) {
+export default function ArchitectureExplorer({ className, lang }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const simulationRef = useRef<d3.Simulation<GraphNode, GraphLink> | null>(
@@ -119,6 +155,15 @@ export default function ArchitectureExplorer({ className }: Props) {
     node: GraphNode;
   } | null>(null);
   const [isDark, setIsDark] = useState(false);
+
+  const isZh = lang
+    ? lang === "zh"
+    : typeof document !== "undefined"
+      ? document.documentElement.lang.startsWith("zh") ||
+        window.location.pathname.includes("/zh/") ||
+        window.location.pathname.endsWith("/zh") ||
+        window.location.pathname === "/"
+      : false;
 
   // Detect dark mode
   useEffect(() => {
@@ -220,8 +265,16 @@ export default function ArchitectureExplorer({ className }: Props) {
       .attr("d", "M0,-4L10,0L0,4")
       .attr("fill", colors.edgeHighlight);
 
-    // Clone data for simulation
-    const simNodes: GraphNode[] = nodes.map((d) => ({ ...d }));
+    // Clone data for simulation (with localized content if Chinese)
+    const simNodes: GraphNode[] = nodes.map((d) => {
+      if (!isZh) return { ...d };
+      const zh = zhNodeData[d.id];
+      return {
+        ...d,
+        label: zh?.label ?? d.label,
+        description: zh?.description ?? d.description,
+      };
+    });
     const simLinks: GraphLink[] = links.map((d) => ({ ...d }));
 
     // Force simulation
@@ -434,7 +487,9 @@ export default function ArchitectureExplorer({ className }: Props) {
             ? (import.meta as Record<string, Record<string, string>>).env.BASE_URL
             : '/';
           const base = rawBase.endsWith("/") ? rawBase : rawBase + "/";
-          window.location.href = base + d.href.replace(/^\//, "");
+          const cleanHref = d.href.replace(/^\//, "");
+          const targetPath = isZh ? `zh/${cleanHref}` : cleanHref;
+          window.location.href = base + targetPath;
         }
       });
 
@@ -537,7 +592,7 @@ export default function ArchitectureExplorer({ className }: Props) {
                 fontFamily: "var(--font-mono)",
               }}
             >
-              Click to read chapter
+              {isZh ? "点击阅读该章节 →" : "Click to read chapter"}
             </div>
           )}
         </div>
@@ -565,7 +620,7 @@ export default function ArchitectureExplorer({ className }: Props) {
               display: "inline-block",
             }}
           />
-          Core abstraction
+          {isZh ? "核心抽象" : "Core abstraction"}
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span
@@ -577,9 +632,13 @@ export default function ArchitectureExplorer({ className }: Props) {
               display: "inline-block",
             }}
           />
-          Interface
+          {isZh ? "交互接口" : "Interface"}
         </span>
-        <span>Drag nodes to explore. Hover for details. Click to read.</span>
+        <span>
+          {isZh
+            ? "拖拽节点自由探索 · 悬停查看详情 · 点击直达章节"
+            : "Drag nodes to explore. Hover for details. Click to read."}
+        </span>
       </div>
     </div>
   );

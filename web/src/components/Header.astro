@@ -12,12 +12,12 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 
 let targetUrl = base;
 if (lang === 'en') {
-  targetUrl = slug ? `${base}zh/${slug}/` : `${base}zh/`;
+  targetUrl = slug ? `${base}zh/${slug}/` : base;
 } else {
-  targetUrl = slug ? `${base}${slug}/` : base;
+  targetUrl = slug ? `${base}${slug}/` : `${base}en/`;
 }
 
-const homeUrl = lang === 'zh' ? `${base}zh/` : base;
+const homeUrl = lang === 'zh' ? base : `${base}en/`;
 const brandTitle = lang === 'zh' ? 'Claude Code 源码解密' : 'Claude Code from Source';
 ---
 
