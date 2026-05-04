@@ -4,6 +4,8 @@
 
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Anthropic palette — extracted from anthropic.com */
   --color-cream: #f5f4ed;
@@ -25,6 +27,10 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
