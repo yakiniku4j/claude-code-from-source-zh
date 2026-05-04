@@ -1,0 +1,175 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import ArchitectureExplorer from '../../components/ArchitectureExplorer';
+import { getParts, getChapters } from '../../book.config';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+const parts = getParts('zh');
+const chapters = getChapters('zh');
+---
+
+<BaseLayout
+  title="Claude Code 源码解密 —— 底层架构、设计模式与内部实现"
+  description="深度逆向与剖析 Anthropic AI 编码智能体系统架构的技术专著。18 个章节、400 余页等量深度、基于 source maps 的白盒架构拆解。"
+  lang="zh"
+>
+  <Header lang="zh" />
+
+  <main class="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-20">
+
+    <!-- Hero -->
+    <div class="text-center mb-20">
+      <img
+        src={`${base}cover.jpg`}
+        alt="Claude Code from Source — 封面"
+        class="mx-auto w-64 md:w-72 rounded-lg shadow-lg mb-10"
+      />
+      <h1 class="text-3xl md:text-4xl font-bold font-[var(--font-serif)] text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-6 leading-tight">
+        Anthropic 如何构建出全球最受广泛使用的<br class="hidden md:inline" /> AI 编码智能体
+      </h1>
+      <p class="text-lg text-[var(--color-secondary)] dark:text-[var(--color-muted)] max-w-2xl mx-auto leading-relaxed mb-6">
+        当 Claude Code 在 npm 发布时，完整的 source maps 被一同打包释出。我们研读了每一个文件。本书将系统架构、核心权衡与设计哲学提炼为
+        <span class="text-[var(--color-terracotta)] font-medium">18 个完整章节</span>，供每一位软件工程师学习并应用到自己的生产系统中。
+      </p>
+      <a
+        href={`${base}zh/${chapters[0].slug}/`}
+        class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-terracotta)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+      >
+        开始阅读
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- 核心收获 -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-bold font-[var(--font-serif)] text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-8">
+        你将学到什么
+      </h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        {[
+          { title: 'Agent 循环驱动引擎', text: '探究异步生成器（AsyncGenerator）如何驱动整个系统——流式输出处理、工具并发调度、错误自动恢复以及跨越 4 层的上下文压缩机制。' },
+          { title: '生产级大规模工具执行', text: '从模型请求到工具结果的 14 步严格防护流水线。权限动态决策、流式推测性执行，以及基于并发安全分类的分批调度。' },
+          { title: '多智能体协同与集群', text: '子智能体（Sub-agents）如何通过共享 Prompt 缓存前缀将调用成本直降 95%。分叉智能体、协调者模式 (Coordinator) 与基于邮箱通信的 Swarm 架构。' },
+          { title: '摒弃数据库的纯文件记忆', text: '基于纯 Markdown 文本文件与 LLM 智能召回的记忆系统。四类记忆模型、时效衰减机制，以及超越向量检索的 Sonnet 侧边查询设计。' },
+          { title: '极致性能工程调优', text: '借助模块级 I/O 并发重叠实现 240ms 极速启动。输出槽位预留机制在 99% 的请求中节省上下文。用于模糊匹配的 26 位字符位图预过滤器。' },
+          { title: '可扩展性与防注入安全', text: '技能（Skills）两阶段延迟加载。27 个生命周期 Hooks、启动期静态配置快照机制，从根源上免疫运行时 Prompt 注入修改攻击。' },
+        ].map(({ title, text }) => (
+          <div class="p-5 rounded-lg border border-[var(--color-border)] dark:border-[#333]">
+            <h3 class="font-semibold text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-2">{title}</h3>
+            <p class="text-sm text-[var(--color-secondary)] dark:text-[var(--color-muted)] leading-relaxed">{text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 架构探索器 -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-bold font-[var(--font-serif)] text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-3">
+        交互式系统架构全景探索
+      </h2>
+      <p class="text-sm text-[var(--color-muted)] mb-6">
+        六大核心抽象驱动着整个 Claude Code。可拖拽节点探索关联、悬停查看细节、点击进入对应深度章节。
+      </p>
+      <ArchitectureExplorer client:only="react" className="w-full" />
+    </section>
+
+    <!-- 本书适合谁 -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-bold font-[var(--font-serif)] text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-6">
+        本书适合谁读
+      </h2>
+      <div class="space-y-4 text-[var(--color-secondary)] dark:text-[var(--color-muted)]">
+        <p><strong class="text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">构建生产级 Agent 系统的工程师。</strong> 每一章均以“实战应用 (Apply This)”结尾——提炼出 5 大具备实操落地价值的设计模式，直接借鉴优秀架构，避开已知暗坑。</p>
+        <p><strong class="text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">评估技术选型的技术主管与架构师。</strong> 即使不通读每一行代码，也能紧跟叙述脉络，深入理解“为什么这样设计”背后的核心工程权衡。</p>
+        <p><strong class="text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">对前沿 AI 开发者工具内部原理充满好奇的技术探索者。</strong> Claude Code 已被数十万开发者广泛使用，这里为您完整揭示其幕后的工程机制。</p>
+      </div>
+    </section>
+
+    <!-- 章节全景目录 -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-bold font-[var(--font-serif)] text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-8">
+        全书章节目录
+      </h2>
+      {parts.map((part) => {
+        const partChapters = chapters.filter(c => part.chapters.includes(c.number));
+        return (
+          <div class="mb-10">
+            <div class="flex items-baseline gap-3 mb-1">
+              <span class="text-xs font-semibold uppercase tracking-wider text-[var(--color-terracotta)]">第 {part.number} 部分</span>
+              <h3 class="text-lg font-bold text-[var(--color-charcoal)] dark:text-[var(--color-cream)] font-[var(--font-serif)]">{part.title}</h3>
+            </div>
+            <p class="text-sm italic text-[var(--color-muted)] mb-4">{part.epigraph}</p>
+
+            <div class="space-y-2">
+              {partChapters.map((ch) => (
+                <a
+                  href={`${base}zh/${ch.slug}/`}
+                  class="group flex items-start gap-3 p-3 -mx-3 rounded-lg hover:bg-[var(--color-beige)] dark:hover:bg-[var(--color-dark-surface)] transition-colors"
+                >
+                  <span class="text-sm font-mono text-[var(--color-muted)] mt-0.5 w-6 shrink-0 text-right">{ch.number}</span>
+                  <div>
+                    <span class="text-[var(--color-charcoal)] dark:text-[var(--color-cream)] group-hover:text-[var(--color-terracotta)] font-medium transition-colors">
+                      {ch.title}
+                    </span>
+                    <p class="text-sm text-[var(--color-muted)] mt-0.5">{ch.description}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+
+    <!-- 10 大核心模式 -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-bold font-[var(--font-serif)] text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-3">
+        让 Agent 系统顺畅运转的 10 大核心模式
+      </h2>
+      <p class="text-[var(--color-muted)] mb-6">若时间有限，以下 10 项架构决策是 Claude Code 最具迁移价值的工程精华。</p>
+      <div class="space-y-4">
+        {[
+          { name: 'AsyncGenerator 驱动 Agent 循环', desc: 'Yield 结构化 Message，提供天然的背压控制、取消传播与进度共享' },
+          { name: '推测性工具执行 (Speculative Execution)', desc: '在模型流式输出工具调用的同时预先启动只读操作与权限校验' },
+          { name: '并发安全分批调度', desc: '根据工具自身声明的安全边界将工具分批，读操作并发执行，写操作串行安全落盘' },
+          { name: '分叉智能体 (Fork Agents) 实现缓存共享', desc: '子智能体严格复用父会话字节完全一致的 Prompt 前缀，立省 95% 输入 Token' },
+          { name: '4 层渐进式上下文压缩', desc: 'Snip 修剪、Microcompact 微压缩、Collapse 折叠、Auto-compact 全量摘要' },
+          { name: '基于文件与 LLM 召回的记忆机制', desc: '摒弃复杂的向量数据库依赖，使用结构化 Markdown 文件配合轻量模型侧边查询' },
+          { name: '技能 (Skills) 两阶段延迟加载', desc: '启动时仅加载元数据与简介，在被调用或意图命中时才加载正文' },
+          { name: '粘性锁存器 (Sticky Latches)', desc: '一旦启用了 Beta Header，在整个会话期间绝不解闭，强保服务端 Prompt Cache 不击穿' },
+          { name: '输出槽位预留策略 (Slot Reservation)', desc: '默认预留 8K 输出空间，命中上限时无缝升阶至 64K，在 99% 的请求中省下宝贵上下文' },
+          { name: '配置不可变快照 (Snapshot Security)', desc: '启动时对所有 Hook 与策略进行只读快照冻结，从根本上免疫运行时 Prompt 注入修改攻击' },
+        ].map((p, i) => (
+          <div class="flex gap-4 items-start">
+            <span class="text-sm font-mono text-[var(--color-terracotta)] font-bold mt-1 w-6 shrink-0 text-right">{i + 1}</span>
+            <div>
+              <span class="font-semibold text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">{p.name}</span>
+              <span class="text-[var(--color-secondary)] dark:text-[var(--color-muted)]"> —— {p.desc}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 免责声明 -->
+    <section class="mb-12 p-6 rounded-lg border border-[var(--color-border)] dark:border-[#333] bg-[var(--color-beige)]/50 dark:bg-[var(--color-dark-surface)]/50">
+      <p class="text-sm text-[var(--color-secondary)] dark:text-[var(--color-muted)] leading-relaxed">
+        <strong class="text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">学术与技术研究声明：</strong> 本书不包含 Claude Code 的任何专有源代码——每个代码块均为阐释架构设计模式而重新编写的伪代码。目标是帮助工程师深刻理解生产级 AI 编码智能体的系统设计思想。
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-sm text-[var(--color-muted)] border-t border-[var(--color-border)] dark:border-[#333] pt-8 pb-12">
+      <p>
+        独立的技术与教育研究分析。与 Anthropic 官方无隶属或商业背书关系。
+      </p>
+      <p class="mt-2">
+        <a href="https://github.com/alejandrobalderas/claude-code-from-source" class="text-[var(--color-terracotta)] hover:underline">GitHub 开源仓库</a>
+      </p>
+    </footer>
+  </main>
+</BaseLayout>
